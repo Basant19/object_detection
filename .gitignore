@@ -175,10 +175,7 @@ cython_debug/
 
 
 
-#for docker 
-.dockerignore
-docker-compose.override.yml
-docker-compose.yml
+
 
 #adding .github folder to stop github  from running actions on this repo
 .github/
