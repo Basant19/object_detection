@@ -1,0 +1,79 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+
+# Flask-specific
+instance/
+*.pyc
+*.pyo
+*.pyd
+flask_session/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Environment files and secrets
+.env
+*.env
+.env.*
+secrets.json
+credentials.json
+
+
+
+# Logs and temp files
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+
+# Test artifacts
+*.coverage
+.cache/
+coverage.xml
+htmlcov/
+
+# Git and version control
+.git/
+.gitignore
+.gitattributes
+
+# OS and IDE/editor settings
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Docker-related
+docker-compose.override.yml
+docker-compose.yml
+Dockerfile*
+.dockerignore
+
+# Build system and package files
+dist/
+build/
+*.egg-info/
+*.eggs/
+
+# Node-related (if using frontend with Flask)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+pnpm-lock.yaml
+
+#for gitignore
+.gitignore
+
+#adding .github folder to stop github  from running actions on this repo
+.github/
