@@ -72,3 +72,5 @@ pnpm-lock.yaml
 
 #adding .github folder to stop github  from running actions on this repo
 .github/
+
+CollectedImages/*

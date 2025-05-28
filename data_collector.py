@@ -11,7 +11,7 @@ number_of_images = 5
 
 for label in labels:
     img_path = os.path.join(IMAGE_PATH, label)
-    os.makedirs(img_path)
+    os.makedirs(img_path,exist_ok=True)
 
     #open camera 
     cap = cv2.VideoCapture(0)
