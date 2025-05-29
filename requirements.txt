@@ -1,4 +1,4 @@
-
+six
 dill
 from-root
 notebook
@@ -29,7 +29,6 @@ comet
 seaborn
 coremltools
 onnx
-onnx-simplifier
 nvidia-pyindex
 nvidia-tensorrt
 tensorflow
