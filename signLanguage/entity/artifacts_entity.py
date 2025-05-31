@@ -11,7 +11,7 @@ class DataIngestionArtifact:
 @dataclass
 class DataValidationArtifact:
     validation_status: bool
-
+    data_zip_file_path: str
 
 
 @dataclass

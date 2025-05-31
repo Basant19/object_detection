@@ -25,28 +25,26 @@ class DataValidation:
     
     def validate_all_files_exist(self) -> bool:
         try:
-            
-            validation_status = None
             all_files = os.listdir(self.data_ingestion_artifact.feature_store_path)
+            missing_files = []
 
-            for file in all_files:
-                if file not in self.data_validation_config.required_file_list:
-                    validation_status = False
-                    os.makedirs(self.data_validation_config.data_validation_dir, exist_ok=True)
-                    with open(self.data_validation_config.valid_status_file_dir, 'w') as f:
-                        f.write(f"Validation status: {validation_status}")
+            for required_file in self.data_validation_config.required_file_list:
+                if required_file not in all_files:
+                    missing_files.append(required_file)
 
+            validation_status = len(missing_files) == 0
+
+            os.makedirs(self.data_validation_config.data_validation_dir, exist_ok=True)
+            with open(self.data_validation_config.valid_status_file_dir, 'w') as f:
+                if validation_status:
+                    f.write(f"Validation status: True\nAll required files found.")
                 else:
-                    validation_status = True
-                    os.makedirs(self.data_validation_config.data_validation_dir, exist_ok=True)
-                    with open(self.data_validation_config.valid_status_file_dir, 'w') as f:
-                        f.write(f"Validation status: {validation_status}")
-            
+                 f.write(f"Validation status: False\nMissing files: {missing_files}")
+
             return validation_status
 
         except Exception as e:
             raise SignException(e, sys)
-        
 
     
     def initiate_data_validation(self) -> DataValidationArtifact: 
@@ -54,13 +52,12 @@ class DataValidation:
         try:
             status = self.validate_all_files_exist()
             data_validation_artifact = DataValidationArtifact(
-                validation_status=status)
+                validation_status=status,data_zip_file_path=self.data_ingestion_artifact.data_zip_file_path)
 
             logging.info("Exited initiate_data_validation method of DataValidation class")
             logging.info(f"Data validation artifact: {data_validation_artifact}")
 
-            if status:
-                shutil.copy(self.data_ingestion_artifact.data_zip_file_path, os.getcwd())
+
 
             return data_validation_artifact
 
