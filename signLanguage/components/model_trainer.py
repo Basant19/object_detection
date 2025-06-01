@@ -46,7 +46,7 @@ class ModelTrainer:
                 f"cd yolov5 && python train.py --img 416 --batch {self.model_trainer_config.batch_size} "
                 f"--epochs {self.model_trainer_config.no_epochs} --data ../data.yaml "
                 f"--cfg ./models/custom_{model_config_file_name}.yaml --weights {self.model_trainer_config.weight_name} "
-                f"--name yolov5s_results --cache"
+                f"--name yolov5s_results --cache "
             )
 
             # Get the latest training run directory

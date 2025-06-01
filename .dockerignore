@@ -76,3 +76,6 @@ pnpm-lock.yaml
 CollectedImages/*
 artifacts/*
 log/*
+yolov5/
+/yolov5/
+valid/
