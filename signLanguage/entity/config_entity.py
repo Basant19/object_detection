@@ -60,3 +60,17 @@ class ModelTrainerConfig:
 class ModelPusherConfig:
     BUCKET_NAME: str = BUCKET_NAME
     S3_MODEL_KEY_PATH: str = S3_MODEL_NAME
+
+
+
+
+@dataclass
+class ModelDownloaderConfig:
+    model_downloader_dir: str = os.path.join(
+        training_pipeline_config.artifacts_dir, MODEL_DOWNLOADER_DIR_NAME
+    )
+    local_model_path: str = os.path.join(
+        model_downloader_dir, MODEL_DOWNLOADER_LOCAL_MODEL_PATH
+    )
+    bucket_name: str = BUCKET_NAME
+    s3_model_key: str = S3_MODEL_NAME

@@ -6,9 +6,9 @@ from signLanguage.components.data_validation import DataValidation
 from signLanguage.components.model_trainer import ModelTrainer
 from signLanguage.components.model_pusher import ModelPusher
 from signLanguage.configuration.s3_operations import S3Operation
-from signLanguage.entity.config_entity import (DataIngestionConfig,DataValidationConfig,ModelTrainerConfig,ModelPusherConfig)
-from signLanguage.entity.artifacts_entity import (DataIngestionArtifact,DataValidationArtifact,ModelTrainerArtifact,ModelPusherArtifacts)
-
+from signLanguage.entity.config_entity import (DataIngestionConfig,DataValidationConfig,ModelTrainerConfig,ModelPusherConfig,ModelDownloaderConfig)
+from signLanguage.entity.artifacts_entity import (DataIngestionArtifact,DataValidationArtifact,ModelTrainerArtifact,ModelPusherArtifacts,ModelDownloaderArtifact)
+from signLanguage.components.model_downloader import ModelDownloader
 
 class TrainPipeline:
     def __init__(self):
@@ -16,6 +16,7 @@ class TrainPipeline:
         self.data_validation_config = DataValidationConfig()
         self.model_trainer_config = ModelTrainerConfig()
         self.model_pusher_config = ModelPusherConfig()
+        self.model_downloader_config = ModelDownloaderConfig()
         self.s3_operations = S3Operation()
 
     def start_data_ingestion(self)-> DataIngestionArtifact:
@@ -89,7 +90,23 @@ class TrainPipeline:
             return model_pusher_artifact
         except Exception as e:
             raise SignException(e, sys)
-        
+
+    
+    def start_model_download(self) -> ModelDownloaderArtifact:
+        """Downloads the trained model from S3 if not present locally.
+        """
+        try:
+            logging.info("Entered the start_model_download method of TrainPipeline class")
+
+            model_downloader = ModelDownloader(config=self.model_downloader_config)
+            model_downloader_artifact = model_downloader.initiate_model_download()
+
+            logging.info("Exited the start_model_download method of TrainPipeline class")
+
+            return model_downloader_artifact
+
+        except Exception as e:
+            raise SignException(e, sys)
 
     def run_pipeline (self) ->None:
             logging.info("Entered the run_pipeline method of TrainPipeline class")
@@ -102,6 +119,8 @@ class TrainPipeline:
                 if data_validation_artifact.validation_status == True:
                     model_trainer_artifact = self.start_model_trainer(data_validation_artifact=data_validation_artifact)
                     model_pusher_artifact = self.start_model_pusher(model_trainer_artifact=model_trainer_artifact,s3=self.s3_operations)
+                    model_downloader_artifact = self.start_model_download()
+                    logging.info(f"Model downloaded: {model_downloader_artifact.downloaded}, Path: {model_downloader_artifact.model_path}")
                 else:
                     raise Exception("Your data is not in correct format")
                 

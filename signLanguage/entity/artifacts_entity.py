@@ -26,3 +26,9 @@ class ModelTrainerArtifact:
 class ModelPusherArtifacts:
     bucket_name: str
     s3_model_path: str
+
+
+@dataclass
+class ModelDownloaderArtifact:
+    model_path: str
+    downloaded: bool

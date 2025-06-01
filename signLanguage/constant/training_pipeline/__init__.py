@@ -46,3 +46,10 @@ MODEL PUSHER related constant start with MODEL_PUSHER var name
 """
 BUCKET_NAME = "sign-lang-detection-basant"
 S3_MODEL_NAME = "best.pt"
+
+
+"""
+MODEL DOWNLOADER related constant start with MODEL_DOWNLOADER var name
+"""
+MODEL_DOWNLOADER_DIR_NAME: str = "model_downloader"
+MODEL_DOWNLOADER_LOCAL_MODEL_PATH: str = "best.pt"
