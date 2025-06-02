@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Language Detection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100">
+
+  <div class="container text-center">
+    <h1 class="mb-3">Sign Language Detection</h1>
+    <h2 class="mb-4">Click on the train button first and then upload an image</h2>
+
+    <!-- Train Button -->
+    <form method="GET" action="/train" id="trainForm">
+      <button id="trainBtn" type="submit" class="btn btn-primary mb-4">Train Model</button>
+    </form>
+
+    <!-- Loader -->
+    <div id="loader" class="spinner-border text-info mb-4" style="display: none;" role="status">
+      <span class="visually-hidden">Training...</span>
+    </div>
+
+    <!-- Upload Image Form -->
+    <form id="uploadForm" class="p-4 border rounded shadow bg-light">
+      <div class="dropzone mb-3">
+        <h3>Drop image to upload</h3>
+        <input class="form-control mt-3" type="file" id="image" accept="image/*" required disabled>
+      </div>
+      <button type="submit" class="btn btn-primary w-100" id="uploadBtn" disabled>Predict Image</button>
+    </form>
+
+    <div id="predictionOutput" class="mt-3"></div>
+
+    <!-- Live Detection -->
+    <button id="liveBtn" type="button" class="btn btn-primary w-100 mt-4" data-bs-toggle="modal" data-bs-target="#liveModal" disabled>Start Live Detection</button>
+  </div>
+
+  <!-- Live Modal -->
+  <div class="modal fade" id="liveModal" tabindex="-1" aria-labelledby="liveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="liveModalLabel">Live Sign Detection</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="liveStream" src="" class="img-fluid rounded border border-light">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('trainForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      document.getElementById('loader').style.display = 'inline-block';
+
+      try {
+        const response = await fetch('/train');
+        const text = await response.text();
+
+        if (response.ok) {
+          alert("Training completed successfully!");
+
+          document.getElementById('image').disabled = false;
+          document.getElementById('uploadBtn').disabled = false;
+          document.getElementById('liveBtn').disabled = false;
+        } else {
+          alert("Training failed: " + text);
+        }
+      } catch (err) {
+        alert("Training error: " + err);
+      } finally {
+        document.getElementById('loader').style.display = 'none';
+      }
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const imageInput = document.getElementById('image');
+      const file = imageInput.files[0];
+
+      if (!file) {
+        alert("Please select an image file.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = async function () {
+        const base64Image = reader.result.split(',')[1];
+
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: base64Image })
+        });
+
+        const result = await response.json();
+
+        const imgHtml = `<h5>Prediction Result:</h5><img src="data:image/jpeg;base64,${result.image}" class="img-fluid rounded border border-primary mt-3"/>`;
+        document.getElementById('predictionOutput').innerHTML = imgHtml;
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    // Live Detection Modal - Start camera stream only when modal opens
+    const liveBtn = document.getElementById('liveBtn');
+    const liveStream = document.getElementById('liveStream');
+
+    liveBtn.addEventListener('click', () => {
+      liveStream.src = "/video_feed"; // Start stream
+    });
+
+    // Stop video stream when modal closes
+    document.getElementById('liveModal').addEventListener('hidden.bs.modal', function () {
+      liveStream.src = ""; // Stop stream
+    });
+  </script>
+
+</body>
+</html>
